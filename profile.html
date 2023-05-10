@@ -1,0 +1,236 @@
+{%extends "zweets/base.html"%}
+{%load static%}
+
+{%block content%}
+<h1> Profile</h1>
+{%if profile%}
+
+<div class="card" style="width: 100%;">
+
+
+ <div>
+  <img src="https://via.placeholder.com/1200x150" class="img-fluid" alt="banner" width="100%">
+  <img src="{% static 'image/default-profile.png'%}" class="inner-image" alt="..."  width="100px" height="100px" style="border-radius: 50%;">
+ </div>
+  <div class="card-body">
+    <h5 class="card-title">Username: {{profile.user.username}}</h5><div>
+  
+     Follows: <br>
+    {% for follow in profile.follows.all %}
+    
+    <a href='{% url "profile" follow.user_id%}'>
+    @{{follow}} 
+    </a>
+    {%endfor%}
+
+
+    <br><br>
+
+
+
+    
+    Followed by:
+    {%for follower in profile.followed_by.all%}
+    <a href="/profile/{{follower.user_id}}">
+    @{{follower}}
+    </a>
+    
+    {%endfor%}
+
+
+
+
+
+    <p class="card-text"><br>
+	username : @{{profile.user.username|lower}}
+	<br>
+		Last Update :<small>{{profile.date_modified}}</small>
+	</p>
+ 
+
+
+
+<form method="POST">
+	{%csrf_token%}
+
+	{%if profile in user.profile.follows.all%}
+
+	<button class ='btn btn-outline-danger' name = "follow"
+	value ='unfollow' type = 'submit'> Unfollow </button>
+
+
+
+	{%else%}
+		<button class ='btn btn-outline-success' name = "follow"
+		value ='follow' type = 'submit'> Follow </button>
+    {%endif%}
+
+
+
+
+{%if zweet_form%}
+</form>
+<hr>
+
+  <form method="post">
+  {% csrf_token %}
+  {{ zweet_form.body.label_tag }}
+  {{ zweet_form.body }}
+  {% if zweet_form.body.errors %}
+    {{ zweet_form.body.errors }}
+  {% endif %}
+  <input type="submit" value="Zweet">
+</form>
+{% if zweet_form_submitted %}
+    <script>
+        window.location.replace("{{ request.path }}");
+    </script>
+{% endif %}
+
+{%endif%}
+
+
+
+
+
+<hr>
+{%if zweets%}
+
+
+{%for zweet in zweets%}
+
+
+<div class="card mb-3" style="max-width: 100%;">
+
+
+  <div class="row g-0">
+    <div class="col-md-2">
+      <img src="{% static 'image/default-profile.png' %}" class="img-fluid " alt="profile pic" style="border-radius: 50%;" width="100px" height="100px">
+       </div>
+
+      <div class="col-md-4"><h5 ><strong>{{zweet.user}}</strong></h5>
+        <a href="/profile/{{zweet.user_id}}"><small>@{{zweet.user|lower}}</small></a>
+        </div>
+      <div class="col-md-4"></div>
+     </div> 
+  
+
+   <div class ='row g-0'>
+    <div class="col-md-10">
+      <div class="card-body">
+        <p class="card-text"><h4>{{zweet.body|linebreaks}}</h4></p>
+        <small>{{zweet.created_at}}</small>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+
+        <form method="post">
+           {% csrf_token%}
+           {{ reply_form.text }}
+           {%if reply_form.text.errors%}
+           {{reply_form.text.errors}}
+           {%endif%}
+          <input type="hidden" name = 'zweet_id' value="{{zweet.id}}">
+          <input type="submit" value="Reply">
+        </form>
+      {%for reply in replies%}
+
+
+
+
+
+       {%if reply.zweet == zweet%}
+       {%if reply.is_parent%}
+
+
+       
+
+<div class="card mb-3" style="max-width: 100%; padding-left: 20px;">
+  <div class="row g-0">
+    <div class="col-md-2">
+      <img src="{% static 'image/default-profile.png' %}" class="img-fluid " alt="profile pic" style="border-radius: 50%;" width="100px" height="100px">
+       </div>
+
+      <div class="col-md-4"><h5 ><strong>{{reply.user}}</strong></h5>
+        <a href="/profile/{{zweet.user_id}}"><small>@{{reply.user|lower}}</small></a>
+        </div>
+      <div class="col-md-4"></div>
+     </div> 
+  
+
+   <div class ='row g-0'>
+    <div class="col-md-10">
+      <div class="card-body">
+        <p class="card-text"><h4>{{reply.text|linebreaks}}</h4></p>
+        <small>{{text.created_at}}</small>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>  
+
+        <form method="post">
+           {%csrf_token%}
+           {{ reply_form.text }}
+           {%if reply_form.text.errors%}
+           {{reply_form.text.errors}}
+           {%endif%}
+
+          <input type="hidden" name = 'zweet_id' value="{{zweet.id}}">
+          <input type="hidden" name = 'parent_reply_id' value="{{reply.id}}">
+          <input type="submit" value="reply-to-reply">
+        </form>
+
+        {%for child_reply in reply.children%}
+        <div class="card mb-3" style="max-width: 100%; padding-left: 20px;">
+  <div class="row g-0">
+    <div class="col-md-2">
+      <img src="{% static 'image/default-profile.png' %}" class="img-fluid " alt="profile pic" style="border-radius: 50%;" width="100px" height="100px">
+       </div>
+
+      <div class="col-md-4"><h5 ><strong>{{child_reply.user}}</strong></h5>
+        <a href="/profile/{{zweet.user_id}}"><small>@{{child_reply.user|lower}}</small></a>
+        </div>
+      <div class="col-md-4"></div>
+     </div> 
+  
+
+   <div class ='row g-0'>
+    <div class="col-md-10">
+      <div class="card-body">
+        <p class="card-text"><h4>{{child_reply.text|linebreaks}}</h4></p>
+        <small>{{text.created_at}}</small>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>  
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+              
+              {%endfor%}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+        {%endif%}
+       {%endif%} 
+       {%endfor%}
+
+           </div>
+            </div>
+              </div>
+              </div>
+
+  
+
+
+
+
+<br>
+<hr>
+
+{%endfor%}
+
+{%endif%}
+
+
+
+{%endif%}
+{%endblock%}

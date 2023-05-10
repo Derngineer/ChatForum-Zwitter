@@ -1,0 +1,34 @@
+
+{% extends 'zweets/base.html'%}
+{%load static%}
+
+{%block content%}
+
+<h1>Lets list the profiles</h1>
+<br/>
+<hr>
+{%if profiles%}
+
+
+	{%for profile in profiles%}
+	<ul>
+	<li><div class="card" style="width: 18rem;">
+  <img src="{% static 'image/default-profile.png'%}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">Username: {{profile.user.username}}</h5>
+    <p class="card-text"><br>
+	Link : @{{profile.user.username|lower}}
+	<br>
+		Last Update :<small>{{profile.date_modified}}</small>
+	<br></p>
+    <a href="/profile/{{profile.user_id}}" class="btn btn-primary">view profile</a>
+  </div>
+</div>
+	
+	</li>
+	</ul>
+	{%endfor%}
+{%endif%}
+
+
+{%endblock%}

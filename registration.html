@@ -1,0 +1,31 @@
+{%extends "zweets/base.html"%}
+{%block content%}
+<h1 style="padding: 25px;">Start zweeting</h1>
+<div class="container" style="padding: 25px">
+
+	<form method="POST">
+
+	
+	{%csrf_token%}
+	{%for field in form%}
+	<p>
+		{{field.label_tag}}<br>
+		{{field}}
+		{% if field.help_text %}
+          <small style="color: blue;">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+			</p>
+
+	{%endfor%}
+	<input type="submit" value="register">
+  </form>
+
+
+</div>
+
+
+
+{%endblock%}

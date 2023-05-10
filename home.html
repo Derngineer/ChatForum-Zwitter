@@ -1,0 +1,55 @@
+{%extends "zweets/base.html"%}
+{%load static%}
+
+{%block content%}
+<h1> Zweets</h1>
+{%if zweets%}
+<hr>
+
+{%for zweet in zweets%}
+<div class="card mb-3" style="max-width: 100%;">
+
+
+  <div class="row g-0">
+    <div class="col-md-2">
+      <img src="{% static 'image/default-profile.png' %}" class="img-fluid " alt="profile pic" style="border-radius: 50%;" width="100px" height="100px">
+       </div>
+
+      <div class="col-md-4"><h5 ><strong>{{zweet.user}}</strong></h5>
+
+      	<a href="profile/{{zweet.user_id}}"><small>@{{zweet.user|lower}}</small></a>
+      	</div>
+      <div class="col-md-4"></div>
+     </div> 
+  
+
+   <div class ='row g-0'>
+    <div class="col-md-10">
+      <div class="card-body">
+        <p class="card-text"><h4>{{zweet.body|linebreaks}}</h4></p>
+        <small>{{zweet.created_at}}</small>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+
+        {%for reply in replies%}
+        {%if reply.zweet == zweet%}
+        {{reply}}
+        {%endif%}
+
+        {%endfor%}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<br>
+<hr>
+
+
+{%endfor%}
+
+{%endif%}
+
+{%endblock%}
